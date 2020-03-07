@@ -1,5 +1,7 @@
 package com.example.game.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,10 +27,12 @@ public class Player extends User{
 
     @OneToOne(cascade = CascadeType.ALL)
     @Getter @Setter
+    @JsonManagedReference
     private Stat stats=new Stat();
 
     @Getter @Setter
     @ManyToMany(mappedBy = "players")
+    @JsonIdentityReference
     private Set<Game> games=new HashSet<>();
 
     public Player(){}
@@ -49,6 +53,7 @@ public class Player extends User{
         private String picURL;
 
         public Builder(){
+
         }
         public Builder email(@Email @NotBlank String val){
             email=val;
