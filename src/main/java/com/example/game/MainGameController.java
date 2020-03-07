@@ -55,7 +55,7 @@ public class MainGameController {
 
     @GetMapping("/populate")
     public String populateDB(){
-        gameRepository.deleteAll();
+        //gameRepository.deleteAll();
         playerRepository.deleteAll();
         questionRepository.deleteAll();
 
