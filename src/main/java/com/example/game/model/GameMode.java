@@ -1,4 +1,7 @@
 package com.example.game.model;
 
-public class GameMode {
+public enum GameMode {
+    IS_THIS_A_FACT,
+    WORD_UP,
+    MOVIE_BUFF
 }
