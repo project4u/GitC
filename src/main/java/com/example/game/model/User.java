@@ -2,6 +2,8 @@ package com.example.game.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.repository.cdi.Eager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -23,8 +25,12 @@ public abstract class User extends Auditable {
     @Getter @Setter
     private String saltedHashedPassword;
 
+    public void setSaltedHashedPassword(String password){
+        this.saltedHashedPassword=new BCryptPasswordEncoder(5).encode(password);
+    }
+
     @Getter @Setter
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Role> roles=new HashSet<>();
 
     public User(){}
