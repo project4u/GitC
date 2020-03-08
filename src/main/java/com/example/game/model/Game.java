@@ -1,7 +1,10 @@
 package com.example.game.model;
 
+import com.example.game.Utils;
+import com.example.game.exception.InvalidGameActionException;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jdk.jshell.execution.Util;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -62,6 +65,108 @@ public class Game extends Auditable{
         setHasEllen(builder.hasEllen);
         setGameStatus(builder.gameStatus);
         setLeader(builder.leader);
+        readyPlayers.add(builder.leader);
+    }
+
+    public void addPlayer(Player player) throws InvalidGameActionException {
+        if(!gameStatus.equals(GameStatus.PLAYERS_JOINING)){
+            throw new InvalidGameActionException("Cannot Join as Game already started");
+        }
+        players.add(player);
+    }
+
+    public void removePlayer(Player player) throws InvalidGameActionException {
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No Such player was in the game");
+        players.remove(player);
+        if(players.size()==0 || (players.size()==1 && !gameStatus.equals(GameStatus.PLAYERS_JOINING))){
+            endGame();
+        }
+    }
+
+    public void startGame(Player player) throws InvalidGameActionException {
+        if(!player.equals(leader)){
+            throw new InvalidGameActionException("Only Leader can Start the game");
+        }
+        createNewRound();
+    }
+
+    public void createNewRound() {
+        gameStatus=GameStatus.SUBMITTING_ANSWERS;
+    }
+
+    private void endGame() {
+        gameStatus=GameStatus.ENDED;
+    }
+
+    public String getGameState(){
+
+        return "res for front";
+    }
+
+    public void submitAnswer(Player player, String answer) throws InvalidGameActionException {
+        if(answer.length()==0)
+            throw new InvalidGameActionException("Answer cannot be empty");
+        if(!players.contains(player))
+            throw new InvalidGameActionException("No Such player exists in the game");
+        if(!gameStatus.equals((GameStatus.SUBMITTING_ANSWERS)))
+            throw new InvalidGameActionException("Game is not accepting answer at present");
+        Round currentRound=getCurrentRound();
+        getCurrentRound().submitAnswer(player,answer);
+        if(currentRound.allAnswersSubmitted(players.size())){
+            gameStatus=GameStatus.SELECTING_ANSWERS;
+        }
+    }
+    public void selectAnswer(Player player,PlayerAnswer selectedAnswer) throws InvalidGameActionException {
+        if(players.contains(player))
+            throw new InvalidGameActionException("No Such Player present in the game");
+        if(!gameStatus.equals(GameStatus.SELECTING_ANSWERS))
+            throw new InvalidGameActionException("Game is not Accepting answer at present");
+        Round currentRound=getCurrentRound();
+        getCurrentRound().selectAnswer(player,selectedAnswer);
+        if(currentRound.allAnswersSelected(players.size())){
+            if(rounds.size()<numRounds)
+                gameStatus=GameStatus.WAITING_FOR_READY;
+            else
+            endGame();
+        }
+    }
+
+    public void playerIsReady(Player player) throws InvalidGameActionException {
+        if(players.contains(player))
+            throw new InvalidGameActionException("No Such Player present in the game");
+        if(!gameStatus.equals(GameStatus.WAITING_FOR_READY))
+            throw new InvalidGameActionException("Game is not waiting for players to be ready");
+        readyPlayers.add(player);
+        if(rounds.size()==numRounds)
+            endGame();
+        else
+        if(readyPlayers.size()==players.size())
+            startNewRound();
+    }
+
+    public void startNewRound() {
+        gameStatus=GameStatus.SUBMITTING_ANSWERS;
+        Question question= Utils.getRandomQuestion(gameMode);
+        Round round=new Round(this, (Question) Utils.getRandomQuestion(gameMode),rounds.size()+1);
+        if(hasEllen){
+            round.setEllenAnswer(Utils.getRandomEllenAnswer(question));
+        }
+        rounds.add(new Round());
+    }
+
+    public void playerIsNotReady(Player player) throws InvalidGameActionException {
+        if(players.contains(player))
+            throw new InvalidGameActionException("No Such Player present in the game");
+        if(!gameStatus.equals(GameStatus.WAITING_FOR_READY))
+            throw new InvalidGameActionException("Game is not waiting for players to be ready");
+        readyPlayers.remove(player);
+    }
+
+    public Round getCurrentRound() throws InvalidGameActionException {
+        if(rounds.size()==0)
+            throw new InvalidGameActionException("Game not started yet");
+        return rounds.get(rounds.size()-1);
     }
 
     public static final class Builder{

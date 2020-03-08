@@ -1,10 +1,7 @@
-package com.example.game;
+package com.example.game.controller;
 
 import com.example.game.model.*;
-import com.example.game.repositories.GameRepository;
-import com.example.game.repositories.PlayerRepository;
-import com.example.game.repositories.QuestionRepository;
-import com.example.game.repositories.UserRepository;
+import com.example.game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +15,10 @@ import java.util.Set;
 
 
 @RestController
-@RequestMapping("/")
-public class MainGameController {
-    @GetMapping("/")
+@RequestMapping("/dev-test")
+public class DevTestController {
+
+    @GetMapping("/dev-test")
     public String sayHello(){
         return "Hello World";
     }
@@ -33,36 +31,44 @@ public class MainGameController {
     private GameRepository gameRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoundRepository roundRepository;
 
-    @GetMapping("/players")
+    @GetMapping("/dev-test/players")
     public List<Player> getAllPlayers(){
         return playerRepository.findAll();
     }
 
-    @GetMapping("/players/{id}")
+    @GetMapping("/dev-test/players/{id}")
     public Player getPlayerById(@PathVariable(name="id") Long id){
         return playerRepository.findById(id).orElseThrow();
     }
 
-    @GetMapping("/questions")
+    @GetMapping("/dev-test/questions")
     public List<Question> getAllQuestion(){ return questionRepository.findAll();}
 
-    @GetMapping("/question/{id}")
+    @GetMapping("/dev-test/question/{id}")
     public Question getQuestionById(@PathVariable(name="id") Long id){return questionRepository.findById(id).orElseThrow();}
 
-    @GetMapping("/games")
+    @GetMapping("/dev-test/games")
     public List<Game> getAllGames(){return gameRepository.findAll();}
 
-    @GetMapping("/games/{id}")
+    @GetMapping("/dev-test/games/{id}")
     public Game getGameById(@PathVariable(name="id") Long id){ return gameRepository.findById(id).orElseThrow();}
 
-    @GetMapping("/users")
+    @GetMapping("/dev-test/users")
     public List<User> getAllUsers(){return userRepository.findAll();}
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/dev-test/users/{id}")
     public User getUserById(@PathVariable(name="id") Long id){ return userRepository.findById(id).orElseThrow();}
 
-    @GetMapping("/populate")
+    @GetMapping("/dev-test/rounds")
+    public List<Round> getAllRounds(){return roundRepository.findAll();}
+
+    @GetMapping("/dev-test/rounds/{id}")
+    public Round getRoundById(@PathVariable(name="id") Long id){ return roundRepository.findById(id).orElseThrow();}
+
+    @GetMapping("/dev-test/populate")
     public String populateDB(){
         gameRepository.deleteAll();
         playerRepository.deleteAll();
