@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -25,4 +26,13 @@ public abstract class User extends Auditable {
     @Getter @Setter
     @ManyToMany
     Set<Role> roles=new HashSet<>();
+
+    public User(){}
+
+    public User(User user) {
+        super();
+        email=user.getEmail();
+        saltedHashedPassword=user.getSaltedHashedPassword();
+        roles=user.getRoles();
+    }
 }

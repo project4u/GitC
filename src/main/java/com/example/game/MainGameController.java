@@ -4,6 +4,7 @@ import com.example.game.model.*;
 import com.example.game.repositories.GameRepository;
 import com.example.game.repositories.PlayerRepository;
 import com.example.game.repositories.QuestionRepository;
+import com.example.game.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,8 @@ public class MainGameController {
     private QuestionRepository questionRepository;
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/players")
     public List<Player> getAllPlayers(){
@@ -52,6 +55,12 @@ public class MainGameController {
 
     @GetMapping("/games/{id}")
     public Game getGameById(@PathVariable(name="id") Long id){ return gameRepository.findById(id).orElseThrow();}
+
+    @GetMapping("/users")
+    public List<User> getAllUsers(){return userRepository.findAll();}
+
+    @GetMapping("/users/{id}")
+    public User getUserById(@PathVariable(name="id") Long id){ return userRepository.findById(id).orElseThrow();}
 
     @GetMapping("/populate")
     public String populateDB(){
