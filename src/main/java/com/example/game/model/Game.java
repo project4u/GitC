@@ -24,11 +24,12 @@ public class Game extends Auditable{
 
     @NotNull
     @Getter @Setter
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
     private GameMode gameMode;
 
     @OneToMany(mappedBy = "game",cascade = CascadeType.ALL)
     @JsonManagedReference
+    @OrderBy(value = "round_number asc")
     private List<Round> rounds=new ArrayList<>();
 
     @Getter @Setter
@@ -65,7 +66,11 @@ public class Game extends Auditable{
         setHasEllen(builder.hasEllen);
         setGameStatus(builder.gameStatus);
         setLeader(builder.leader);
-        readyPlayers.add(builder.leader);
+        try {
+            addPlayer(builder.leader);
+        } catch (InvalidGameActionException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addPlayer(Player player) throws InvalidGameActionException {
@@ -73,12 +78,15 @@ public class Game extends Auditable{
             throw new InvalidGameActionException("Cannot Join as Game already started");
         }
         players.add(player);
+        player.setCurrentGame(this);
     }
 
     public void removePlayer(Player player) throws InvalidGameActionException {
         if(!players.contains(player))
             throw new InvalidGameActionException("No Such player was in the game");
         players.remove(player);
+        if(player.getCurrentGame().equals(this))
+            player.setCurrentGame(null);
         if(players.size()==0 || (players.size()==1 && !gameStatus.equals(GameStatus.PLAYERS_JOINING))){
             endGame();
         }
@@ -97,6 +105,10 @@ public class Game extends Auditable{
 
     private void endGame() {
         gameStatus=GameStatus.ENDED;
+        for(Player player:players){
+            if(player.getCurrentGame().equals(this))
+                player.setCurrentGame(null);
+        }
     }
 
     public String getGameState(){

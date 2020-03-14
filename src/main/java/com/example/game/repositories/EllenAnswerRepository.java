@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface EllenAnswerRepository extends JpaRepository<EllenAnswer,Long> {
-    @Query(value = "",nativeQuery = true)
+    @Query(value = "Select * from ellen_answers where question_id=:question.getId() order by rand() limit 1",nativeQuery = true)
     EllenAnswer getRandomAnswer(Question question);
 }

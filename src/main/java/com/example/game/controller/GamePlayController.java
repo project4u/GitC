@@ -16,13 +16,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class GamePlayController {
     @Autowired
     private PlayerRepository playerRepository;
+
     @GetMapping("/")
     public String play(Authentication authentication){
         return authentication.getName();
     }
+
     @GetMapping("/submit-answer/{answer}")
     public void submitAnswer(Authentication authentication,@PathVariable(name = "answer") String answer) throws InvalidGameActionException {
-        Player player=playerRepository.findByEmail(authentication.getName()).orElseThrow();
+        Player player=getCurrentPlayer(authentication);
         player.getCurrentGame().submitAnswer(player,answer);
     }
+
+    private Player getCurrentPlayer(Authentication authentication) {
+        return playerRepository.findByEmail(authentication.getName()).orElseThrow();
+    }
+
 }

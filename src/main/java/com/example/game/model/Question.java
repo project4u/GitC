@@ -26,7 +26,8 @@ public class Question extends Auditable{
     Set<EllenAnswer> ellenAnswer =new HashSet<>();
 
     @NotNull @Getter @Setter
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JsonIdentityReference
     private GameMode gameMode;
 
     public Question(){}

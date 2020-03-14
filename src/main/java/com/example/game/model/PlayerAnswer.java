@@ -27,6 +27,8 @@ public class PlayerAnswer extends Auditable{
     @Getter @Setter
     private String answer;
 
+    public PlayerAnswer(){}
+
     public PlayerAnswer(Round round, Player player, String answer) {
         super();
         this.round=round;

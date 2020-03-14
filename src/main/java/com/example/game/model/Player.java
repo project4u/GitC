@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.engine.internal.Cascade;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +37,11 @@ public class Player extends User{
     @JsonIdentityReference
     private Set<Game> games=new HashSet<>();
 
+    @Getter @Setter
+    @JsonIdentityReference
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Game currentGame=null;
+
     public Player(){}
 
     private Player (Builder builder){
@@ -43,10 +50,11 @@ public class Player extends User{
         setAlias(builder.alias);
         setPsychFaceURL(builder.psychFaceURL);
         setPicURL(builder.picURL);
+        setCurrentGame(builder.currentGame);
     }
 
     public Game getCurrentGame() {
-
+        return this.currentGame;
     }
 
     public static final class Builder{
@@ -55,6 +63,7 @@ public class Player extends User{
         private @NotBlank String alias;
         private String psychFaceURL;
         private String picURL;
+        private Game currentGame;
 
         public Builder(){
 
@@ -77,6 +86,10 @@ public class Player extends User{
         }
         public Builder picURL(String val){
             picURL=val;
+            return this;
+        }
+        public Builder currentGame(Game val){
+            currentGame=val;
             return this;
         }
         public Player build(){

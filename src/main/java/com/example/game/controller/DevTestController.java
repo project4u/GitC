@@ -15,7 +15,7 @@ import java.util.Set;
 
 
 @RestController
-@RequestMapping("/dev-test")
+@RequestMapping("/")
 public class DevTestController {
 
     @GetMapping("/dev-test")
@@ -33,6 +33,8 @@ public class DevTestController {
     private UserRepository userRepository;
     @Autowired
     private RoundRepository roundRepository;
+    @Autowired
+    private GameModeRepository gameModeRepository;
 
     @GetMapping("/dev-test/players")
     public List<Player> getAllPlayers(){
@@ -73,6 +75,7 @@ public class DevTestController {
         gameRepository.deleteAll();
         playerRepository.deleteAll();
         questionRepository.deleteAll();
+        gameModeRepository.deleteAll();
 
         Player player1 =new Player.Builder()
                 .alias("Dharmendra S Singh")
@@ -84,23 +87,28 @@ public class DevTestController {
                 .saltedHashedPassword("john1234")
                 .email("jn1234@gmail.com")
                 .build();
+        GameMode isThisFact=new GameMode("IS_THIS_A_FACT","","");
         Question q1=new Question.Builder()
                 .question("What is HashMap")
                 .correctAnswer("Map")
-                .gameMode(GameMode.IS_THIS_A_FACT)
+                .gameMode(isThisFact)
                 .build();
         Game g1=new Game.Builder()
                 .numRounds(10)
-                .gameMode(GameMode.IS_THIS_A_FACT)
+                .gameMode(isThisFact)
                 .gameStatus(GameStatus.PLAYERS_JOINING)
                 .hasEllen(false)
                 .leader(player1)
                 .build();
+        Round r1=new Round(g1,q1,1);
         g1.getPlayers().add(player1);
+        player1.setCurrentGame(g1);
+        gameModeRepository.save(isThisFact);
         playerRepository.save(player1);
         playerRepository.save(player2);
         questionRepository.save(q1);
         gameRepository.save(g1);
+        roundRepository.save(r1);
 
         return "populated";
     }
