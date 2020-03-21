@@ -39,7 +39,7 @@ public class Player extends User{
 
     @Getter @Setter
     @JsonIdentityReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Game currentGame=null;
 
     public Player(){}
@@ -51,10 +51,6 @@ public class Player extends User{
         setPsychFaceURL(builder.psychFaceURL);
         setPicURL(builder.picURL);
         setCurrentGame(builder.currentGame);
-    }
-
-    public Game getCurrentGame() {
-        return this.currentGame;
     }
 
     public static final class Builder{

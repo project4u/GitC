@@ -72,6 +72,10 @@ public class DevTestController {
 
     @GetMapping("/dev-test/populate")
     public String populateDB(){
+        for(Player player : playerRepository.findAll()){
+            player.getGames().clear();
+            playerRepository.save(player);
+        }
         gameRepository.deleteAll();
         playerRepository.deleteAll();
         questionRepository.deleteAll();
@@ -82,17 +86,15 @@ public class DevTestController {
                 .saltedHashedPassword("abcd1234")
                 .email("ds1234@gmail.com")
                 .build();
+        playerRepository.save(player1);
         Player player2 =new Player.Builder()
                 .alias("John & John")
                 .saltedHashedPassword("john1234")
                 .email("jn1234@gmail.com")
                 .build();
+        playerRepository.save(player2);
         GameMode isThisFact=new GameMode("IS_THIS_A_FACT","","");
-        Question q1=new Question.Builder()
-                .question("What is HashMap")
-                .correctAnswer("Map")
-                .gameMode(isThisFact)
-                .build();
+        gameModeRepository.save(isThisFact);
         Game g1=new Game.Builder()
                 .numRounds(10)
                 .gameMode(isThisFact)
@@ -100,16 +102,17 @@ public class DevTestController {
                 .hasEllen(false)
                 .leader(player1)
                 .build();
-        Round r1=new Round(g1,q1,1);
-        g1.getPlayers().add(player1);
-        player1.setCurrentGame(g1);
-        gameModeRepository.save(isThisFact);
-        playerRepository.save(player1);
-        playerRepository.save(player2);
-        questionRepository.save(q1);
         gameRepository.save(g1);
+        Question q1=new Question.Builder()
+                .question("What is HashMap")
+                .correctAnswer("Map")
+                .gameMode(isThisFact)
+                .build();
+        questionRepository.save(q1);
+        Round r1=new Round(g1,q1,1);
         roundRepository.save(r1);
-
-        return "populated";
+        /*g1.getPlayers().add(player1);
+        player1.setCurrentGame(g1);*/
+         return "populated";
     }
 }

@@ -1,7 +1,6 @@
 package com.example.game.controller;
 
 import com.example.game.exception.InvalidGameActionException;
-import com.example.game.model.Game;
 import com.example.game.model.Player;
 import com.example.game.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/play")
 @Service
-public class GamePlayController {
+public class GamePlayAPI {
     @Autowired
     private PlayerRepository playerRepository;
 
     @GetMapping("/")
     public String play(Authentication authentication){
-        return authentication.getName();
+            return authentication.getName();
     }
 
     @GetMapping("/submit-answer/{answer}")
