@@ -93,8 +93,12 @@ public class DevTestController {
                 .email("jn1234@gmail.com")
                 .build();
         playerRepository.save(player2);
-        GameMode isThisFact=new GameMode("IS_THIS_A_FACT","","");
+        GameMode isThisFact=new GameMode("IS_THIS_A_FACT","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
+                "DICE ROLL");
         gameModeRepository.save(isThisFact);
+        GameMode isThisBluff=new GameMode("IS_THIS_A_BLUFF","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
+                "JUMANJI");
+        gameModeRepository.save(isThisBluff);
         Game g1=new Game.Builder()
                 .numRounds(10)
                 .gameMode(isThisFact)

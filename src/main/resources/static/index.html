@@ -3,25 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Scaler Academy : psych </title>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <style>
+        .card{
+            display : inline-block;
+            width : 300px;
+            height : 300px;
+            border : 1px solid black;
+            margin : 1em;
+            padding : 1em;
+        }
+        .title{
+            font-size : 200%;
+            text-align : center;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
-    {{ message }}
-</div>
-Hello Dharmendra
+    <div class="personal">
+        <div class="profile">Profile Info</div>
+        <a href="/logout" class="logout"> Logout {{playerAlias}}</a>
+    </div>
+    <div class="section">
+        <div class="heading">Create Game</div>
 
+        <label for="rounds">Number of Rounds</label>
+        <input type="number" id="rounds">
+
+        <label for="ellen">Has Ellen</label>
+        <input type="checkbox" id="ellen">
+
+        <div v-for="mode in gameModes" class="card">
+            <div class="title">{{ mode.title }}</div>
+            <img :src="mode.picture" alt="" width="200px" height="200px">
+            <div class="description"> {{ mode.description }}</div>
+        </div>
+
+    </div>
+</div>
 <script>
-    window.app = new Vue({
+  window.app = new Vue({
   el: '#app',
   data: {
-
+    playerAlias : "",
+    gameModes :[]
   },
   methods: {
-
+    getDataFromResponse : function(response){
+        let self=this;
+        response.json().then(function(data){
+            for(let key in data){
+                self[key]=data[key];
+                console.log(key+" "+data[key]);
+            }
+        })
+    }
   },
   mounted: function(){
-
+    fetch('/play/').then(this.getDataFromResponse);
   }
 })
 </script>
