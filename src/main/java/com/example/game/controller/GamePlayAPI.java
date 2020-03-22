@@ -1,19 +1,18 @@
 package com.example.game.controller;
 
 import com.example.game.exception.InvalidGameActionException;
+import com.example.game.model.Game;
 import com.example.game.model.GameMode;
 import com.example.game.model.Player;
 import com.example.game.repositories.GameModeRepository;
+import com.example.game.repositories.GameRepository;
 import com.example.game.repositories.PlayerRepository;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/play")
 @RestController
@@ -22,12 +21,16 @@ public class GamePlayAPI {
     private PlayerRepository playerRepository;
     @Autowired
     private GameModeRepository gameModeRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
     @GetMapping("/")
     public JSONObject play(Authentication authentication){
         Player player=getCurrentPlayer(authentication);
+        Game currentGame = player.getCurrentGame();
         JSONObject response=new JSONObject();
         response.put("playerAlias",player.getAlias());
+        response.put("currentGame",currentGame==null?null:currentGame.getId());
         JSONArray gameModes=new JSONArray();
         for(GameMode mode:gameModeRepository.findAll())
         {
@@ -50,6 +53,15 @@ public class GamePlayAPI {
     */
     private Player getCurrentPlayer(Authentication authentication) {
         return playerRepository.findByEmail(authentication.getName()).orElseThrow();
+    }
+
+    @GetMapping("/create-game")
+    public void createGame(Authentication authentication, @RequestParam(name = "mode") String gameMode,
+                           @RequestParam(name = "rounds") Integer numRounds,
+                           @RequestParam(name = "ellen") Boolean hasEllen){
+        Player leader=getCurrentPlayer(authentication);
+        GameMode mode=gameModeRepository.findByName(gameMode).orElseThrow();
+        gameRepository.save(new Game.Builder().gameMode(mode).numRounds(numRounds).hasEllen(hasEllen).build());
     }
 
 }
