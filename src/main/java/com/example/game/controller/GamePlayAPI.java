@@ -3,6 +3,7 @@ package com.example.game.controller;
 import com.example.game.exception.InvalidGameActionException;
 import com.example.game.model.Game;
 import com.example.game.model.GameMode;
+import com.example.game.model.GameStatus;
 import com.example.game.model.Player;
 import com.example.game.repositories.GameModeRepository;
 import com.example.game.repositories.GameRepository;
@@ -24,25 +25,31 @@ public class GamePlayAPI {
     @Autowired
     private GameRepository gameRepository;
 
-    @GetMapping("/")
-    public JSONObject play(Authentication authentication){
-        Player player=getCurrentPlayer(authentication);
+    private JSONObject getData(Player player){
         Game currentGame = player.getCurrentGame();
         JSONObject response=new JSONObject();
         response.put("playerAlias",player.getAlias());
         response.put("currentGame",currentGame==null?null:currentGame.getId());
-        JSONArray gameModes=new JSONArray();
-        for(GameMode mode:gameModeRepository.findAll())
-        {
-            JSONObject gameMode=new JSONObject();
-            gameMode.put("title",mode.getName());
-            gameMode.put("picture",mode.getPicture());
-            gameMode.put("description",mode.getDescription());
-            gameModes.add(gameMode);
+        if(currentGame==null){
+            JSONArray gameModes=new JSONArray();
+            for(GameMode mode:gameModeRepository.findAll())
+            {
+                JSONObject gameMode=new JSONObject();
+                gameMode.put("title",mode.getName());
+                gameMode.put("picture",mode.getPicture());
+                gameMode.put("description",mode.getDescription());
+                gameModes.add(gameMode);
+            }
+            response.put("gameModes",gameModes);
+            System.out.println(gameModes);
         }
-        response.put("gameModes",gameModes);
-        System.out.println(gameModes);
         return response;
+    }
+
+    @GetMapping("/")
+    public JSONObject play(Authentication authentication){
+        Player player=getCurrentPlayer(authentication);
+        return getData(player);
     }
 
    /* @GetMapping("/submit-answer/{answer}")
@@ -56,12 +63,14 @@ public class GamePlayAPI {
     }
 
     @GetMapping("/create-game")
-    public void createGame(Authentication authentication, @RequestParam(name = "mode") String gameMode,
+    public JSONObject createGame(Authentication authentication, @RequestParam(name = "mode") String gameMode,
                            @RequestParam(name = "rounds") Integer numRounds,
                            @RequestParam(name = "ellen") Boolean hasEllen){
         Player leader=getCurrentPlayer(authentication);
         GameMode mode=gameModeRepository.findByName(gameMode).orElseThrow();
-        gameRepository.save(new Game.Builder().gameMode(mode).numRounds(numRounds).hasEllen(hasEllen).build());
+        gameRepository.save(new Game.Builder().gameMode(mode).numRounds(numRounds).hasEllen(hasEllen).leader(leader).
+                gameStatus(GameStatus.PLAYERS_JOINING).build());
+        return getData(leader);
     }
 
 }

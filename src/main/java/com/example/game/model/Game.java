@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jdk.jshell.execution.Util;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONObject;
+import netscape.javascript.JSObject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -111,9 +113,10 @@ public class Game extends Auditable{
         }
     }
 
-    public String getGameState(){
-
-        return "res for front";
+    public JSONObject getGameState(){
+        JSONObject state=new JSONObject();
+        state.put("Hello","World");
+        return state;
     }
 
     public void submitAnswer(Player player, String answer) throws InvalidGameActionException {
@@ -177,7 +180,8 @@ public class Game extends Auditable{
 
     public Round getCurrentRound() throws InvalidGameActionException {
         if(rounds.size()==0)
-            throw new InvalidGameActionException("Game not started yet");
+            return null;
+          // throw new InvalidGameActionException("Game not started yet");
         return rounds.get(rounds.size()-1);
     }
 
