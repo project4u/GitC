@@ -30,7 +30,11 @@
     </div>
 
     <div v-if="currentGame">
-        <div class="section">Display Game State</div>
+        <div class="section"> {{gameModes.id}}
+            {{gameModes.numRounds}}
+            {{gameModes.mode}}
+            {{gameModes}}
+        </div>
     </div>
     <div v-else>
         <div class="section">
@@ -61,7 +65,8 @@
     gameModes :[],
     hasEllen : false,
     numRounds : 10,
-    currentGame :null
+    currentGame :null,
+    gameState : {}
   },
   methods: {
     createGame : function(mode){

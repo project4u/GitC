@@ -74,6 +74,7 @@ public class DevTestController {
     public String populateDB(){
         for(Player player : playerRepository.findAll()){
             player.getGames().clear();
+            player.setCurrentGame(null);
             playerRepository.save(player);
         }
         gameRepository.deleteAll();

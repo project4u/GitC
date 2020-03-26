@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jdk.jshell.execution.Util;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import netscape.javascript.JSObject;
 
@@ -115,7 +116,16 @@ public class Game extends Auditable{
 
     public JSONObject getGameState(){
         JSONObject state=new JSONObject();
-        state.put("Hello","World");
+        state.put("id",getId());
+        state.put("numRounds",getNumRounds());
+        state.put("mode",getGameMode().getName());
+        JSONArray playerData = new JSONArray();
+        for(Player player : players){
+            JSONObject data=new JSONObject();
+            data.put("alias",player.getAlias());
+            playerData.add(data);
+        }
+        state.put("players",playerData);
         return state;
     }
 
