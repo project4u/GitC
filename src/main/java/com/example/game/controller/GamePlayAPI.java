@@ -45,6 +45,7 @@ public class GamePlayAPI {
         }
         else{
             response.put("gameModes",currentGame.getGameState());
+            response.put("gameState",currentGame.getGameStatus());
         }
         return response;
     }
