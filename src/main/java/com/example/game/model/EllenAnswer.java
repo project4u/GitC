@@ -26,5 +26,6 @@ public class EllenAnswer extends Auditable{
     @Getter @Setter
     private String answer;
 
+    public EllenAnswer(){}
 
 }

@@ -25,7 +25,7 @@ public class GamePlayAPI {
     @Autowired
     private GameRepository gameRepository;
 
-    private JSONObject getData(Player player){
+    private  JSONObject getData(Player player){
         Game currentGame = player.getCurrentGame();
         JSONObject response=new JSONObject();
         response.put("playerAlias",player.getAlias());

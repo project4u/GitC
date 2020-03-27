@@ -5,13 +5,14 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
-@ComponentScan
+@Component
 public class ApplicationContextProvider implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    public static ApplicationContext getContext(){
+    public static ApplicationContext getApplicationContext(){
         return applicationContext;
     }
 
@@ -20,7 +21,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
         this.applicationContext=context;
     }
 
-    public BeanFactory getApplicationContext() {
+    /*public static BeanFactory getApplicationContext() {
         return applicationContext;
-    }
+    }*/
 }

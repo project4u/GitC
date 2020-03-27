@@ -1,5 +1,8 @@
 package com.example.game.controller;
 
+import com.example.game.Constants;
+import com.example.game.Pair;
+import com.example.game.Utils;
 import com.example.game.model.*;
 import com.example.game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -94,12 +94,15 @@ public class DevTestController {
                 .email("jn1234@gmail.com")
                 .build();
         playerRepository.save(player2);
-        GameMode isThisFact=new GameMode("IS_THIS_A_FACT","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
-                "DICE ROLL");
+        GameMode isThisFact=new GameMode("IS THIS A FACT","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
+                "IS THIS FACT");
         gameModeRepository.save(isThisFact);
-        GameMode isThisBluff=new GameMode("IS_THIS_A_BLUFF","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
-                "JUMANJI");
+        GameMode isThisBluff=new GameMode("WORD-UP","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
+                "WORD-UP");
         gameModeRepository.save(isThisBluff);
+        GameMode unScramble=new GameMode("UN-SCRAMBLE","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
+                "UN-SCRAMBLE");
+        gameModeRepository.save(unScramble);
         Game g1=new Game.Builder()
                 .numRounds(10)
                 .gameMode(isThisFact)
@@ -108,14 +111,22 @@ public class DevTestController {
                 .leader(player1)
                 .build();
         gameRepository.save(g1);
-        Question q1=new Question.Builder()
-                .question("What is HashMap")
-                .correctAnswer("Map")
-                .gameMode(isThisFact)
-                .build();
-        questionRepository.save(q1);
-        Round r1=new Round(g1,q1,1);
-        roundRepository.save(r1);
+
+        List<Question> questions=new ArrayList<>();
+        for(Map.Entry<String ,String> fileMode : Constants.QA_FILES.entrySet()){
+            //String fileName=fileMode.getKey();
+            GameMode gameMode=gameModeRepository.findByName(fileMode.getValue()).orElseThrow();
+            System.out.println("add" +fileMode);
+            System.out.println("filepath :"+fileMode.getKey());
+            System.out.println("1"+Utils.readQAFile((fileMode.getKey())));
+            for(Pair<String ,String> questionAnswer : Utils.readQAFile(fileMode.getKey())){
+                Question question=new Question.Builder().question(questionAnswer.getFirst()).
+                        correctAnswer(questionAnswer.getSecond()).
+                        gameMode(gameMode).build();
+                questions.add(question);
+            }
+        }
+        questionRepository.saveAll(questions);
         /*g1.getPlayers().add(player1);
         player1.setCurrentGame(g1);*/
          return "populated";
