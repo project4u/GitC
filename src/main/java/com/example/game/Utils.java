@@ -47,11 +47,11 @@ public class Utils {
     }
     //autowired work if class is service,controller,restcontroller
     public static Question getRandomQuestion(GameMode gameMode) {
-        return questionRepository.getRandomQuestion(gameMode);
+        return questionRepository.getRandomQuestion(gameMode.getId());
     }
 
     public static EllenAnswer getRandomEllenAnswer(Question question) {
-        return ellenAnswerRepository.getRandomAnswer(question);
+        return ellenAnswerRepository.getRandomAnswer(question.getId());
     }
 
     public String getSecretCodeFromGameId(Long id){

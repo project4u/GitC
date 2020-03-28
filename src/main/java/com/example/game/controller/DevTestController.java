@@ -3,6 +3,7 @@ package com.example.game.controller;
 import com.example.game.Constants;
 import com.example.game.Pair;
 import com.example.game.Utils;
+import com.example.game.exception.InvalidGameActionException;
 import com.example.game.model.*;
 import com.example.game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,14 +104,7 @@ public class DevTestController {
         GameMode unScramble=new GameMode("UN-SCRAMBLE","https://assets3.thrillist.com/v1/image/2846512/size/gn-gift_guide_variable_c_2x.jpg",
                 "UN-SCRAMBLE");
         gameModeRepository.save(unScramble);
-        Game g1=new Game.Builder()
-                .numRounds(10)
-                .gameMode(isThisFact)
-                .gameStatus(GameStatus.PLAYERS_JOINING)
-                .hasEllen(false)
-                .leader(player1)
-                .build();
-        gameRepository.save(g1);
+
 
         List<Question> questions=new ArrayList<>();
         for(Map.Entry<String ,String> fileMode : Constants.QA_FILES.entrySet()){
@@ -127,6 +121,27 @@ public class DevTestController {
             }
         }
         questionRepository.saveAll(questions);
+
+        Game g1=new Game.Builder()
+                .numRounds(15)
+                .gameMode(isThisFact)
+                .hasEllen(true)
+                .gameStatus(GameStatus.PLAYERS_JOINING)
+                .leader(player1)
+                .build();
+        try {
+            g1.addPlayer(player2);
+        } catch (InvalidGameActionException e) {
+            e.printStackTrace();
+        }
+        gameRepository.save(g1);
+
+        try {
+            g1.startGame(player1);
+        } catch (InvalidGameActionException e) {
+            e.printStackTrace();
+        }
+        gameRepository.save(g1);
         /*g1.getPlayers().add(player1);
         player1.setCurrentGame(g1);*/
          return "populated";

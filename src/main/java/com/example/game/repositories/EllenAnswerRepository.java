@@ -12,6 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface EllenAnswerRepository extends JpaRepository<EllenAnswer,Long> {
-    @Query(value = "Select * from ellen_answers where question_id=:question.getId() order by rand() limit 1",nativeQuery = true)
-    EllenAnswer getRandomAnswer(Question question);
+    @Query(value = "Select * from ellen_answers where question_id=:questionId order by RANDOM() limit 1",nativeQuery = true)
+    EllenAnswer getRandomAnswer(Long questionId);
 }

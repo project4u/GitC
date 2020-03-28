@@ -77,4 +77,24 @@ public class GamePlayAPI {
         return getData(leader);
     }
 
+
+
+    @GetMapping("luffy-Submit")
+    public String luffySubmit() throws InvalidGameActionException {
+        Player luffy=playerRepository.findByEmail("ds1234@gmail.com").orElseThrow();
+        Game game=luffy.getCurrentGame();
+        game.submitAnswer(luffy,"Answer");
+        gameRepository.save(game);
+        return "done";
+    }
+
+    @GetMapping("robin-Submit")
+    public String robinSubmit() throws InvalidGameActionException {
+        Player robin=playerRepository.findByEmail("jn1234@gmail.com").orElseThrow();
+        Game game=robin.getCurrentGame();
+        game.submitAnswer(robin,"Answer");
+        gameRepository.save(game);
+        return "done";
+    }
+
 }

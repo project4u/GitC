@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question,Long> {
-    @Query(value = "SELECT * FROM questions WHERE gameMode=:gameMode ORDER BY RAND() LIMIT 1",nativeQuery = true)
-    Question getRandomQuestion(GameMode gameMode);
+    //JPA ->dba agnostic
+    //native -> postgres
+    @Query(value = "SELECT * FROM questions WHERE game_mode_id=:gameModeId ORDER BY RANDOM() LIMIT 1",nativeQuery = true)
+    Question getRandomQuestion(Long gameModeId);
 }

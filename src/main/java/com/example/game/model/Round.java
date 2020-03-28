@@ -60,8 +60,13 @@ public class Round extends Auditable{
         if(playerAnswer.containsKey(player))
             throw new InvalidGameActionException("player has already submitted answer for this round");
         for(PlayerAnswer existingAnswer : playerAnswer.values())
-            if(answer.equals(existingAnswer))
+            if(answer.equals(existingAnswer.getAnswer()))
                 throw new InvalidGameActionException("Duplicate Answer");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         playerAnswer.put(player,new PlayerAnswer(this,player,answer));
     }
 

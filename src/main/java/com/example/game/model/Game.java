@@ -96,10 +96,14 @@ public class Game extends Auditable{
     }
 
     public void startGame(Player player) throws InvalidGameActionException {
+        if(!gameStatus.equals(GameStatus.PLAYERS_JOINING))
+            throw new InvalidGameActionException("The Game has already Started");
+        if(players.size()<2)
+            throw new InvalidGameActionException("Can't Start Game with a Single Player");
         if(!player.equals(leader)){
             throw new InvalidGameActionException("Only Leader can Start the game");
         }
-        createNewRound();
+        startNewRound();
     }
 
     public void createNewRound() {
@@ -173,11 +177,13 @@ public class Game extends Auditable{
     public void startNewRound() {
         gameStatus=GameStatus.SUBMITTING_ANSWERS;
         Question question= Utils.getRandomQuestion(gameMode);
-        Round round=new Round(this, (Question) Utils.getRandomQuestion(gameMode),rounds.size()+1);
+        System.out.println(question.getQuestion());
+        Round round=new Round(this, question,rounds.size()+1);
+        System.out.println(round.getQuestion());
         if(hasEllen){
             round.setEllenAnswer(Utils.getRandomEllenAnswer(question));
         }
-        rounds.add(new Round());
+        rounds.add(round);
     }
 
     public void playerIsNotReady(Player player) throws InvalidGameActionException {
