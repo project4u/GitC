@@ -1,5 +1,6 @@
 package com.example.game.controller;
 
+import com.example.game.Utils;
 import com.example.game.exception.InvalidGameActionException;
 import com.example.game.model.Game;
 import com.example.game.model.GameMode;
@@ -11,6 +12,7 @@ import com.example.game.repositories.PlayerRepository;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +79,43 @@ public class GamePlayAPI {
         return getData(leader);
     }
 
+    @GetMapping("/join-game")
+    public JSONObject joinGame(Authentication authentication,
+                               @RequestParam(name="code") String secretCode) throws InvalidGameActionException {
+        Player player=getCurrentPlayer(authentication);
+        Game game=gameRepository.findById(Utils.getGameIdFromSecretCode(secretCode)).orElseThrow();
+        game.addPlayer(player);
+        return getData(player);
+    }
 
+    @GetMapping("/leave-game")
+    public JSONObject leaveGame(Authentication authentication) throws InvalidGameActionException {
+        Player player=getCurrentPlayer(authentication);
+        player.getCurrentGame().removePlayer(player);
+        return getData(player);
+    }
+
+    @GetMapping("/start-game")
+    public JSONObject startGame(Authentication authentication) throws InvalidGameActionException {
+        Player leader=getCurrentPlayer(authentication);
+        leader.getCurrentGame().startGame(leader);
+        return getData(leader);
+    }
+
+    @GetMapping("/end-game")
+    public JSONObject endGame(Authentication authentication) throws InvalidGameActionException {
+        Player leader=getCurrentPlayer(authentication);
+        leader.getCurrentGame().endGame(leader);
+        return getData(leader);
+    }
+
+    public JSONObject submitAnswer(Authentication authentication,
+                                   @RequestParam(name = "answer") String answer) throws InvalidGameActionException {
+        Player player=getCurrentPlayer(authentication);
+        Game game=player.getCurrentGame();
+        game.submitAnswer(player,answer);
+        return getData(player);
+    }
 
     @GetMapping("luffy-Submit")
     public String luffySubmit() throws InvalidGameActionException {

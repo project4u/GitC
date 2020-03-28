@@ -133,6 +133,14 @@ public class Game extends Auditable{
         return state;
     }
 
+    public void endGame(Player player) throws InvalidGameActionException {
+        if (gameStatus.equals(GameStatus.ENDED))
+            throw new InvalidGameActionException("The game has already ended");
+        if (!player.equals(leader))
+            throw new InvalidGameActionException("Only the leader can end the game");
+        endGame();
+    }
+
     public void submitAnswer(Player player, String answer) throws InvalidGameActionException {
         if(answer.length()==0)
             throw new InvalidGameActionException("Answer cannot be empty");

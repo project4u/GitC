@@ -64,7 +64,7 @@ public class Utils {
         return code.substring(0,code.length()-1);
     }
 
-    public Long getGameIdFromSecretCode(String code){
+    public static Long getGameIdFromSecretCode(String code){
         String words[]=code.split(" ");
         long gameId=0l;
         int base=wordsList.size();
@@ -97,4 +97,6 @@ public class Utils {
         }
         return questions;
     }
+
+
 }

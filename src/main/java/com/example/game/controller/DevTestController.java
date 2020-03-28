@@ -129,11 +129,11 @@ public class DevTestController {
                 .gameStatus(GameStatus.PLAYERS_JOINING)
                 .leader(player1)
                 .build();
-        try {
+        /*try {
             g1.addPlayer(player2);
         } catch (InvalidGameActionException e) {
             e.printStackTrace();
-        }
+        }*/
         gameRepository.save(g1);
 
         try {
