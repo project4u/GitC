@@ -27,7 +27,6 @@ public class GameMode extends Auditable{
     private String name;
 
     @Getter @Setter
-    @URL
     private String picture;
 
     @Getter @Setter

@@ -1,6 +1,7 @@
 package com.example.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class Question extends Auditable{
 
     @OneToMany(mappedBy = "question",cascade = CascadeType.ALL)
     @Getter @Setter
-    @JsonIdentityReference
+    @JsonManagedReference
     Set<EllenAnswer> ellenAnswer =new HashSet<>();
 
     @NotNull @Getter @Setter

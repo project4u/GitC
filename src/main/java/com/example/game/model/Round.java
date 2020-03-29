@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.JSONObject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -57,17 +58,19 @@ public class Round extends Auditable{
     }
 
     public void submitAnswer(Player player, String answer) throws InvalidGameActionException {
-        if(playerAnswer.containsKey(player))
-            throw new InvalidGameActionException("player has already submitted answer for this round");
-        for(PlayerAnswer existingAnswer : playerAnswer.values())
-            if(answer.equals(existingAnswer.getAnswer()))
-                throw new InvalidGameActionException("Duplicate Answer");
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        synchronized (this.getId()) {
+            if (playerAnswer.containsKey(player))
+                throw new InvalidGameActionException("Player has already submitted an answer for this round");
+            for (PlayerAnswer existingAnswer : playerAnswer.values())
+                if (answer.equals(existingAnswer.getAnswer()))
+                    throw new InvalidGameActionException("Duplicate Answer!");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            playerAnswer.put(player, new PlayerAnswer(this, player, answer));
         }
-        playerAnswer.put(player,new PlayerAnswer(this,player,answer));
     }
 
     public boolean allAnswersSubmitted(int numPlayers) {
@@ -75,14 +78,20 @@ public class Round extends Auditable{
     }
 
     public void selectAnswer(Player player, PlayerAnswer selectedAnswer) throws InvalidGameActionException {
-        if(selectedAnswers.containsKey(player))
-            throw new InvalidGameActionException("player has already selected answer for this round");
-        if(selectedAnswer.getPlayer().equals(player))
-            throw new InvalidGameActionException("Can't Select your own answer");
-        selectedAnswers.put(player,selectedAnswer);
+        if (selectedAnswers.containsKey(player))
+            throw new InvalidGameActionException("Player has already selected an answer for this round");
+        if (selectedAnswer.getPlayer().equals(player))
+            throw new InvalidGameActionException("Can't select your own answer");
+        if (!selectedAnswer.getRound().equals(this))
+            throw new InvalidGameActionException("No such answer was submitted in this round");
+        selectedAnswers.put(player, selectedAnswer);
     }
 
     public boolean allAnswersSelected(int numPlayers) {
         return selectedAnswers.size()==numPlayers;
+    }
+
+    public JSONObject getRoundData() {
+        return null;
     }
 }

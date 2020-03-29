@@ -54,7 +54,7 @@ public class Utils {
         return ellenAnswerRepository.getRandomAnswer(question.getId());
     }
 
-    public String getSecretCodeFromGameId(Long id){
+    public static String getSecretCodeFromGameId(Long id){
         String code="";
         int base=wordsList.size();
         while(id>0){

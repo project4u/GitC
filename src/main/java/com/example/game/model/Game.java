@@ -54,7 +54,7 @@ public class Game extends Auditable{
 
     @Getter @Setter
     @Enumerated(EnumType.STRING)
-    private GameStatus gameStatus;
+    private GameStatus gameStatus=GameStatus.PLAYERS_JOINING;
 
     @ManyToMany
     @Getter @Setter
@@ -106,39 +106,16 @@ public class Game extends Auditable{
         startNewRound();
     }
 
-    public void createNewRound() {
+    public void startNewRound() {
         gameStatus=GameStatus.SUBMITTING_ANSWERS;
-    }
-
-    private void endGame() {
-        gameStatus=GameStatus.ENDED;
-        for(Player player:players){
-            if(player.getCurrentGame().equals(this))
-                player.setCurrentGame(null);
+        Question question= Utils.getRandomQuestion(gameMode);
+        System.out.println(question.getQuestion());
+        Round round=new Round(this, question,rounds.size()+1);
+        System.out.println(round.getQuestion());
+        if(hasEllen){
+            round.setEllenAnswer(Utils.getRandomEllenAnswer(question));
         }
-    }
-
-    public JSONObject getGameState(){
-        JSONObject state=new JSONObject();
-        state.put("id",getId());
-        state.put("numRounds",getNumRounds());
-        state.put("mode",getGameMode().getName());
-        JSONArray playerData = new JSONArray();
-        for(Player player : players){
-            JSONObject data=new JSONObject();
-            data.put("alias",player.getAlias());
-            playerData.add(data);
-        }
-        state.put("players",playerData);
-        return state;
-    }
-
-    public void endGame(Player player) throws InvalidGameActionException {
-        if (gameStatus.equals(GameStatus.ENDED))
-            throw new InvalidGameActionException("The game has already ended");
-        if (!player.equals(leader))
-            throw new InvalidGameActionException("Only the leader can end the game");
-        endGame();
+        rounds.add(round);
     }
 
     public void submitAnswer(Player player, String answer) throws InvalidGameActionException {
@@ -165,7 +142,7 @@ public class Game extends Auditable{
             if(rounds.size()<numRounds)
                 gameStatus=GameStatus.WAITING_FOR_READY;
             else
-            endGame();
+                endGame();
         }
     }
 
@@ -182,18 +159,6 @@ public class Game extends Auditable{
             startNewRound();
     }
 
-    public void startNewRound() {
-        gameStatus=GameStatus.SUBMITTING_ANSWERS;
-        Question question= Utils.getRandomQuestion(gameMode);
-        System.out.println(question.getQuestion());
-        Round round=new Round(this, question,rounds.size()+1);
-        System.out.println(round.getQuestion());
-        if(hasEllen){
-            round.setEllenAnswer(Utils.getRandomEllenAnswer(question));
-        }
-        rounds.add(round);
-    }
-
     public void playerIsNotReady(Player player) throws InvalidGameActionException {
         if(players.contains(player))
             throw new InvalidGameActionException("No Such Player present in the game");
@@ -204,10 +169,68 @@ public class Game extends Auditable{
 
     public Round getCurrentRound() throws InvalidGameActionException {
         if(rounds.size()==0)
-            return null;
-          // throw new InvalidGameActionException("Game not started yet");
+            throw new InvalidGameActionException("Game not started yet");
         return rounds.get(rounds.size()-1);
     }
+
+    private void endGame() {
+        gameStatus = GameStatus.ENDED;
+        for (Player player : players) {
+            if (player.getCurrentGame().equals(this))
+                player.setCurrentGame(null);
+            Stat oldPlayerStats = player.getStats();
+            Stat deltaPlayerStats = playerStats.get(player);
+            oldPlayerStats.setCorrectAnswerCount(oldPlayerStats.getCorrectAnswerCount() + deltaPlayerStats.getCorrectAnswerCount());
+            oldPlayerStats.setGamePsychedCount(oldPlayerStats.getGamePsychedCount() + deltaPlayerStats.getGamePsychedCount());
+            oldPlayerStats.setPsychedOthersCount(oldPlayerStats.getPsychedOthersCount() + deltaPlayerStats.getPsychedOthersCount());
+        }
+    }
+
+    public void endGame(Player player) throws InvalidGameActionException {
+        if (gameStatus.equals(GameStatus.ENDED))
+            throw new InvalidGameActionException("The game has already ended");
+        if (!player.equals(leader))
+            throw new InvalidGameActionException("Only the leader can end the game");
+        endGame();
+    }
+
+    public JSONObject getRoundData() throws InvalidGameActionException {
+        return getCurrentRound().getRoundData();
+    }
+
+    public String getSecretCode() {
+        return Utils.getSecretCodeFromGameId(getId());
+    }
+
+    /*public void createNewRound() {
+        gameStatus=GameStatus.SUBMITTING_ANSWERS;
+    }
+
+    public JSONObject getGameState(){
+        JSONObject state=new JSONObject();
+        state.put("id",getId());
+        state.put("numRounds",getNumRounds());
+        state.put("mode",getGameMode().getName());
+        JSONArray playerData = new JSONArray();
+        for(Player player : players){
+            JSONObject data=new JSONObject();
+            data.put("alias",player.getAlias());
+            playerData.add(data);
+        }
+        state.put("players",playerData);
+        return state;
+    }*/
+
+
+
+
+
+
+
+
+
+
+
 
     public static final class Builder{
         private @NotNull GameMode gameMode;

@@ -8,9 +8,9 @@ public class Constants {
     public static Map<String ,String > QA_FILES;
 
     static {
-        QA_FILES=new HashMap<>();
-        QA_FILES.put("classpath:data/qa_facts.txt","IS THIS A FACT");
-        QA_FILES.put("classpath:data/qa_unscramble.txt","UN-SCRAMBLE");
-        QA_FILES.put("classpath:data/qa_word_up.txt","WORD-UP");
+        QA_FILES = new HashMap<>();
+        QA_FILES.put("classpath:data/qa_facts.txt", "Is This A Fact");
+        QA_FILES.put("classpath:data/qa_unscramble.txt", "Un-Scramble");
+        QA_FILES.put("classpath:data/qa_word_up.txt", "Word Up");
     }
 }

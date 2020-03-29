@@ -1,5 +1,7 @@
 package com.example.game.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -16,11 +18,13 @@ public class PlayerAnswer extends Auditable{
     @NonNull
     @ManyToOne
     @Getter @Setter
+    @JsonBackReference
     private Round round;
 
     @NotNull
     @ManyToOne
     @Getter @Setter
+    @JsonIdentityReference
     private Player player;
 
     @NotBlank
@@ -29,7 +33,7 @@ public class PlayerAnswer extends Auditable{
 
     public PlayerAnswer(){}
 
-    public PlayerAnswer(Round round, Player player, String answer) {
+    public PlayerAnswer(@NotNull Round round, @NotNull Player player, @NotNull String answer) {
         super();
         this.round=round;
         this.player=player;

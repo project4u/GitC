@@ -50,7 +50,7 @@ public class Player extends User{
         setAlias(builder.alias);
         setPsychFaceURL(builder.psychFaceURL);
         setPicURL(builder.picURL);
-        setCurrentGame(builder.currentGame);
+        //setCurrentGame(builder.currentGame);
     }
 
     public static final class Builder{
@@ -84,10 +84,10 @@ public class Player extends User{
             picURL=val;
             return this;
         }
-        public Builder currentGame(Game val){
+        /*public Builder currentGame(Game val){
             currentGame=val;
             return this;
-        }
+        }*/
         public Player build(){
             return new Player(this);
         }
